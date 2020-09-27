@@ -3,10 +3,16 @@ defmodule Dead.WorldServer do
 
   use GenServer, restart: :transient
 
+  alias Dead.World.State
+
   @options ~w(dh dz h n z)a
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
+  end
+
+  def tick(pid) do
+    GenServer.call(pid, :tick)
   end
 
   def world(pid) do
@@ -19,11 +25,12 @@ defmodule Dead.WorldServer do
 
   @impl true
   def init({height, width}) do
-    {:ok, %{height: height, width: width, world: %{}}, {:continue, :create_world}}
+    {:ok, State.new(height, width), {:continue, :create_world}}
   end
 
   @impl true
   def handle_call(:reset, _from, state) do
+    # Kill all
     Registry.dispatch(
       Dead.Registry,
       "entity",
@@ -33,8 +40,14 @@ defmodule Dead.WorldServer do
       parallel: true
     )
 
-    world = new(state.height, state.width)
+    world = new_world(state.height, state.width)
     {:reply, world, %{state | world: world}}
+  end
+
+  @impl true
+  def handle_call(:tick, _from, state) do
+    # TODO: each entity needs to know the world server? or we call to the world via a registry?
+    Registry.dispatch(Dead.Registry, "entity", &Enum.each(&1, fn {_pid, _} -> nil end))
   end
 
   @impl true
@@ -44,7 +57,8 @@ defmodule Dead.WorldServer do
 
   @impl true
   def handle_continue(:create_world, state) do
-    {:noreply, %{state | world: new(state.height, state.width)}}
+    {:ok, _} = Registry.register(Dead.Registry, "world", [])
+    {:noreply, %{state | world: new_world(state.height, state.width)}}
   end
 
   @spec new(non_neg_integer, non_neg_integer) :: %{
@@ -52,8 +66,8 @@ defmodule Dead.WorldServer do
           width: non_neg_integer,
           world: map
         }
-  defp new(height, width) do
-    for x <- 0..width, y <- 0..height, into: %{} do
+  defp new_world(height, width) do
+    for x <- 1..width, y <- 1..height, into: %{} do
       @options
       |> Enum.random()
       |> case do
@@ -61,11 +75,16 @@ defmodule Dead.WorldServer do
           {:ok, pid} =
             DynamicSupervisor.start_child(Dead.DynamicSupervisor, {Dead.EntityServer, entity})
 
-          {{x, y}, {entity, pid}}
+          {pid, {entity, x, y}}
 
         tile ->
-          {{x, y}, {tile, nil}}
+          {make_ref(), {tile, x, y}}
       end
     end
   end
 end
+
+# recursively detect collisions
+# or first one wins
+# zombies spawn when space is empty
+# game is over when no more humans or zombies remain

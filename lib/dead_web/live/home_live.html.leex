@@ -1,6 +1,7 @@
 <button phx-click="reset">Reset</button>
+<button phx-click="tick">Tick</button>
 <div class="world">
-  <%= for {_, {tile, _}} <- @world do %>
+  <%= for {_pid, {tile,_x, _y}} <- @world do %>
     <div class="<%= tile %>"></div>
   <% end %>
 </div>
