@@ -23,6 +23,18 @@ defmodule DeadWeb.HomeLive do
     updated_world = Dead.WorldServer.tick(socket.assigns.world_pid)
     {:noreply, assign(socket, world: updated_world)}
   end
+
+  @impl true
+  def handle_event("run", _args, socket) do
+    send(self(), :run)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(:run, socket) do
+    Process.send_after(self(), :run, 32)
+    {:noreply, assign(socket, world: Dead.WorldServer.tick(socket.assigns.world_pid))}
+  end
 end
 
 # start a world

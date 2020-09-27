@@ -3,6 +3,7 @@ defmodule Dead.World.State do
 
   defstruct ~w(
     height
+    previous_world
     spawnable
     width
     world
@@ -11,6 +12,7 @@ defmodule Dead.World.State do
   def new(height, width) do
     %__MODULE__{
       height: height,
+      previous_world: %{},
       spawnable: %{},
       width: width,
       world: %{}
