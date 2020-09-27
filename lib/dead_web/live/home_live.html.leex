@@ -1,0 +1,6 @@
+<button phx-click="reset">Reset</button>
+<div class="world">
+  <%= for {_, {tile, _}} <- @world do %>
+    <div class="<%= tile %>"></div>
+  <% end %>
+</div>

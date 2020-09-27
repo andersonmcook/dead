@@ -1,0 +1,49 @@
+@mixin dot {
+  border-radius: 50%;
+}
+
+@mixin blood {
+  height: 50px;
+  width: 50px;
+}
+
+@mixin entity {
+  height: 25px;
+  margin: 12.5px;
+  width: 25px;
+}
+
+.world {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.h {
+  background: blue;
+  @include dot;
+  @include entity; 
+}
+
+.dh {
+  background: red;
+  @include dot;
+  @include blood;
+}
+
+.z {
+  background: green;
+  @include dot;
+  @include entity;
+}
+
+.dz {
+  background: maroon;
+  @include dot;
+  @include blood;
+}
+
+.n {
+  @include dot;
+  @include entity;
+}
+
