@@ -2,16 +2,16 @@
 
 ## TODO
 
-- [] Learn LiveView
-- [] Get it rendering something
-- [] Interact with the page
-- [] Registry
-- [] DynamicSupervisor?
-- [] All the servers
-- [] Logic
-- [] Communication
-- [] Distribution
-- [] Docker Compose
+- [ ] Learn LiveView
+- [x] Get it rendering something
+- [x] Interact with the page
+- [x] Registry
+- [x] DynamicSupervisor?
+- [x] All the servers
+- [ ] Logic
+- [ ] Communication
+- [ ] Distribution
+- [ ] Docker Compose
 
 ## Setup
 
